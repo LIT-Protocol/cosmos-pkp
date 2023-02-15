@@ -66,29 +66,8 @@ checkPkpTokenOwnership().then(res => {
   console.log('checkPkpTokenOwnership res:', res);
 })
 
-
 // note: bring back once logging is good
 async function testSignWithLit() {
-  // const client = await StargateClient.connect(rpc)
-  // const pkpAccountInfo = await client.getAccount(keplrAddress)
-  // console.log('pkpAccountInfo', pkpAccountInfo)
-  // const mockPkpPubKeyObj = {
-  //   type: 'tendermint/PubKeySecp256k1',
-  //   value: 'A9e9cLzQCTkHPszPTdtzZyk0M0JbgNmxbgeCTAhWyJB+'
-  // }
-  // // @ts-ignore
-  // const keplrBase64 = toBase64(keplrPubKey)
-  // const makeAddress = compressedPubKeyToAddress(keplrBase64)
-  // console.log('makeAddress', makeAddress)
-  // const pkpBuiltInAddress = pubkeyToRawAddress(mockPkpPubKeyObj)
-  // const makeAddress = pkpPubKeyToCosmosAddress(pkpAccountInfo?.pubkey)
-  // console.log('pkpBuiltInAddress', pkpBuiltInAddress)
-
-  // const pkpMakeAddress = pkpPubKeyToCosmosAddress(pkpPublicKey)
-  // console.log('pkpMakeAddress', pkpMakeAddress)
-  // const pkpAddress = ethers.utils.computeAddress(pkpPublicKey)
-  // console.log('pkpAddress', pkpAddress)
-
   console.log('Sign with Lit');
   const pkpSigner = await SigningStargateClientWithLit.createClient(pkpPublicKey, pkpAuthSig, rpc)
   console.log('Signed Tx is:', pkpSigner);

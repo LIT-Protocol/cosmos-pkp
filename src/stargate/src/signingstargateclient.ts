@@ -165,15 +165,10 @@ export class SigningStargateClient extends StargateClient {
     messages: readonly EncodeObject[],
     memo: string | undefined,
   ): Promise<number> {
-    console.log('##### -> start of simulate')
-    console.log('simulate - signerAddress', signerAddress);
-    console.log('simulate - messages', messages);
     const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
-    console.log('simulate - anyMsgs', anyMsgs);
     const accountFromSigner = (await this.signer.getAccounts()).find(
       (account) => account.address === signerAddress,
     );
-    console.log('accountFromSigner', accountFromSigner);
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
@@ -192,7 +187,6 @@ export class SigningStargateClient extends StargateClient {
     memo = "",
   // ): Promise<DeliverTxResponse> {
   ): Promise<void> {
-    console.log('##### -> start of sendTokens')
     // creates message for transaction
     const sendMsg: MsgSendEncodeObject = {
       typeUrl: "/cosmos.bank.v1beta1.MsgSend",
@@ -202,7 +196,6 @@ export class SigningStargateClient extends StargateClient {
         amount: [...amount],
       },
     };
-    console.log('sendTokens - sendMsg', makeLogReadableInTerminal(sendMsg));
     return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
     // await this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
   }
@@ -214,23 +207,17 @@ export class SigningStargateClient extends StargateClient {
     memo = "",
   // ): Promise<DeliverTxResponse> {
   ): Promise<any> {
-    console.log('##### -> start of signAndBroadcast')
     let usedFee: StdFee;
-    console.log('signAndBroadcast - fee', fee)
     if (fee == "auto" || typeof fee === "number") {
       assertDefined(this.gasPrice, "Gas price must be set in the client options when auto gas is used.");
       const gasEstimation = await this.simulate(signerAddress, messages, memo);
-      console.log('gasEstimation', gasEstimation);
       const multiplier = typeof fee === "number" ? fee : 1.3;
       usedFee = calculateFee(Math.round(gasEstimation * multiplier), this.gasPrice);
     } else {
-      console.log('fee is declared')
       usedFee = fee;
     }
     const txRaw = await this.sign(signerAddress, messages, usedFee, memo);
-    console.log('signAndBroadcast - txRaw', txRaw)
     const txBytes = TxRaw.encode(txRaw).finish();
-    console.log('signAndBroadcast - txBytes', txBytes)
     // return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
   }
 
@@ -252,23 +239,18 @@ export class SigningStargateClient extends StargateClient {
     explicitSignerData?: SignerData,
   // ): Promise<TxRaw> {
   ): Promise<any> {
-    console.log('##### -> start of sign')
 
     let signerData: SignerData;
     if (explicitSignerData) {
       signerData = explicitSignerData;
     } else {
       const { accountNumber, sequence } = await this.getSequence(signerAddress);
-      console.log('sign - accountNumber', accountNumber)
-      console.log('sign - sequence', sequence)
       const chainId = await this.getChainId();
-      console.log('sign - chainId', chainId)
       signerData = {
         accountNumber: accountNumber,
         sequence: sequence,
         chainId: chainId,
       };
-      console.log('sign - signerData', signerData)
     }
 
     return this.signDirect(signerAddress, messages, fee, memo, signerData)
@@ -283,21 +265,18 @@ export class SigningStargateClient extends StargateClient {
     { accountNumber, sequence, chainId }: SignerData,
   // ): Promise<TxRaw> {
   ): Promise<any> {
-    console.log('##### -> start of signDirect')
-    console.log('signDirect - signerAddress', signerAddress)
-    console.log('signDirect - messages', messages)
-    console.log('signDirect - fee', fee)
     assert(isOfflineDirectSigner(this.signer));
     const accountFromSigner = (await this.signer.getAccounts()).find(
       (account) => account.address === signerAddress,
     );
-    console.log('signDirect - accountFromSigner', accountFromSigner)
+    console.log('signDirect: accountFromSigner', accountFromSigner)
 
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
-    console.log('========> pubkey', accountFromSigner.pubkey)
     const encodedPubKey = encodePubkey(encodeSecp256k1Pubkey(accountFromSigner.pubkey));
+    console.log('signDirect: encodedPubKey', encodedPubKey)
+
     const txBodyEncodeObject: TxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
@@ -305,16 +284,14 @@ export class SigningStargateClient extends StargateClient {
         memo: memo,
       },
     };
-    console.log('signDirect - txBodyEncodeObject', makeLogReadableInTerminal(txBodyEncodeObject))
+    console.log('signDirect: txBodyEncodeObject', txBodyEncodeObject)
+
     const txBodyBytes = this.registry.encode(txBodyEncodeObject);
-    console.log('signDirect - txBodyBytes', makeLogReadableInTerminal(txBodyBytes))
+    console.log('signDirect: txBodyBytes', txBodyBytes);
+
     const gasLimit = Int53.fromString(fee.gas).toNumber();
-    console.log('encodedPubKey', encodedPubKey)
-    console.log('sinerData', sequence)
-    console.log('fee.amount', fee.amount)
-    console.log('gasLimit', gasLimit)
-    console.log('fee.payer', fee.payer)
-    console.log('fee.granter', fee.granter)
+    console.log('signDirect: gasLimit', gasLimit);
+
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey: encodedPubKey, sequence }],
       fee.amount,
@@ -322,23 +299,21 @@ export class SigningStargateClient extends StargateClient {
       fee.granter,
       fee.payer,
     );
-    console.log('authInfoBytes', makeLogReadableInTerminal(authInfoBytes))
-    console.log('chainId', chainId)
-    console.log('accountNumber', accountNumber)
+    console.log('signDirect: authInfoBytes', authInfoBytes);
+
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
-    console.log('signDirect - signDoc', makeLogReadableInTerminal(signDoc))
-    console.log('signDirect - signerAddress', makeLogReadableInTerminal(signerAddress))
+    console.log('signDirect: signDoc', signDoc);
+
     const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
-    console.log("signDirect - signature.signature", signature.signature.length)
-    console.log("signDirect - signed", signed)
+    console.log('signDirect: signature', signature);
+    console.log('signDirect: signed', signed);
+
     const txRawObj = {
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
       signatures: [fromBase64(signature.signature)],
     }
-    console.log('txRawObj', txRawObj)
     const txRawFromPartial = TxRaw.fromPartial(txRawObj);
-    console.log('txRawFromPartial', txRawFromPartial)
     return txRawFromPartial
   }
 
