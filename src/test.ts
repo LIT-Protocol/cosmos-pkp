@@ -9,7 +9,9 @@ import { SigningStargateClient, StargateClient } from "./stargate/src";
 import { SigningStargateClientWithLit } from "./stargateClientWithLit";
 import { pubkeyToAddress, pubkeyToRawAddress } from "@cosmjs/amino";
 import { ethers } from "ethers";
-import { toBase64 } from "@cosmjs/encoding";
+import { fromHex, toBase64, toBech32 } from "@cosmjs/encoding";
+import EthCrypto from "eth-crypto";
+import { ripemd160, sha256 } from "@cosmjs/crypto";
 
 // note: can probably delete
 // import * as $protobuf from 'protobufjs/minimal';
@@ -60,11 +62,29 @@ const checkPkpTokenOwnership = async () => {
   // console.log('client', client)
   const pkpTokens = await client.getAllBalances(pkpAddress);
   console.log('pkpTokens', pkpTokens)
+  const keplrTokens = await client.getAllBalances(pkpAddress);
+  console.log('keplrTokens', keplrTokens)
 }
 
 checkPkpTokenOwnership().then(res => {
   console.log('checkPkpTokenOwnership res:', res);
 })
+
+const makePkpCosmosAddressFromPubKey = (publicKey: any) => {
+  let cleanedPubKey = publicKey;
+  if (publicKey.startsWith('0x')) {
+    cleanedPubKey = publicKey.slice(2);
+  }
+  const compressedPublicKey = EthCrypto.publicKey.compress(cleanedPubKey);
+
+  const uint8ArrayFromHex = fromHex(compressedPublicKey)
+  const base64CompressedKey = toBase64(uint8ArrayFromHex)
+  const uint8CompressedPublicKey = Uint8Array.from(atob(base64CompressedKey), (c) => c.charCodeAt(0));
+  const address = ripemd160(sha256(uint8CompressedPublicKey));
+  return toBech32('cosmos', address);
+}
+
+console.log('PKP Cosmos Address:', makePkpCosmosAddressFromPubKey(pkpPublicKey));
 
 // note: bring back once logging is good
 async function testSignWithLit() {
@@ -77,9 +97,9 @@ async function testSignWithLit() {
 
 }
 
-testSignWithLit().then((res => {
-  console.log('SignCosmosWithLit res:', res);
-}))
+// testSignWithLit().then((res => {
+//   console.log('SignCosmosWithLit res:', res);
+// }))
 
 // note: for exploring stargate code
 const runSigning = async() => {
