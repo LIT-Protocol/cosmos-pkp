@@ -17,9 +17,7 @@ const code = `
   sign()
 `
 
-const hashMessage = (message: any) => {
-  // const hashMeOnce = ethers.utils.sha256(message);
-  // return ethers.utils.sha256(hashMeOnce);
+const hashMessageUsingEthers = (message: any) => {
   return ethers.utils.sha256(ethers.utils.toUtf8Bytes(message));
 }
 
@@ -40,17 +38,17 @@ async function signCosmosTxWithLit({pkpPublicKey, message, authSig}: SignCosmosT
     return;
   }
 
-  // console.log('message', message)
-  // const hashedWithEthers = hashMessage(message);
-  // console.log('hashedWithEthers', hashedWithEthers);
+  console.log('message', message)
+  const hashedWithEthers = hashMessageUsingEthers(message);
+  console.log('hashedWithEthers', hashedWithEthers);
 
-  const hashedWithCosm = sha256(message);
-  console.log('hashedWithCosm', hashedWithCosm);
+  // const hashedWithCosm = sha256(message);
+  // console.log('hashedWithCosm', hashedWithCosm);
 
 
   const jsParams = {
     publicKey: pkpPublicKey,
-    toSign: hashedWithCosm,
+    toSign: hashedWithEthers,
     sigName: 'cosmos',
   }
 
