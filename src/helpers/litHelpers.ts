@@ -4,10 +4,9 @@ import EthCrypto from "eth-crypto";
 import { isSecp256k1Pubkey, rawSecp256k1PubkeyToRawAddress } from "@cosmjs/amino";
 
 function pkpPubKeyToCosmosAddress(publicKey: string) : string{
-    const compressedPublicKey = compressPublicKey(publicKey)
-    const uint8ArrayFromHex = fromHex(compressedPublicKey)
-    // const compressedBase64PubKey = hexToBase64(compressedPublicKey);
-    const compressedBase64PubKey = toBase64(uint8ArrayFromHex)
+    const compressedPublicKey = compressPublicKey(publicKey);
+    const uint8ArrayFromHex = fromHex(compressedPublicKey);
+    const compressedBase64PubKey = toBase64(uint8ArrayFromHex);
     return compressedPubKeyToAddress(compressedBase64PubKey);
 }
 

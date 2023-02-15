@@ -203,8 +203,8 @@ export class SigningStargateClient extends StargateClient {
       },
     };
     console.log('sendTokens - sendMsg', makeLogReadableInTerminal(sendMsg));
-    // return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
-    await this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
+    return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
+    // await this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
   }
 
   public async signAndBroadcast(
@@ -331,15 +331,15 @@ export class SigningStargateClient extends StargateClient {
     const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
     console.log("signDirect - signature.signature", signature.signature.length)
     console.log("signDirect - signed", signed)
-    // const txRawObj = {
-    //   bodyBytes: signed.bodyBytes,
-    //   authInfoBytes: signed.authInfoBytes,
-    //   signatures: [fromBase64(signature.signature)],
-    // }
-    // console.log('txRawObj', txRawObj)
-    // const txRawFromPartial = TxRaw.fromPartial(txRawObj);
-    // console.log('txRawFromPartial', txRawFromPartial)
-    // return txRawFromPartial
+    const txRawObj = {
+      bodyBytes: signed.bodyBytes,
+      authInfoBytes: signed.authInfoBytes,
+      signatures: [fromBase64(signature.signature)],
+    }
+    console.log('txRawObj', txRawObj)
+    const txRawFromPartial = TxRaw.fromPartial(txRawObj);
+    console.log('txRawFromPartial', txRawFromPartial)
+    return txRawFromPartial
   }
 
 }
