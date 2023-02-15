@@ -55,6 +55,8 @@ import {
 import { DeliverTxResponse, StargateClient, StargateClientOptions } from "./stargateclient";
 import LitJsSdk from "lit-js-sdk";
 import { makeLogReadableInTerminal } from "../../helpers/litHelpers";
+import { Secp256k1 } from "@cosmjs/crypto";
+import { publicKey } from "eth-crypto";
 
 export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ["/cosmos.base.v1beta1.Coin", Coin],
@@ -329,14 +331,14 @@ export class SigningStargateClient extends StargateClient {
     const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
     console.log("signDirect - signature.signature", signature.signature.length)
     console.log("signDirect - signed", signed)
-    const txRawObj = {
-      bodyBytes: signed.bodyBytes,
-      authInfoBytes: signed.authInfoBytes,
-      signatures: [fromBase64(signature.signature)],
-    }
-    console.log('txRawObj', txRawObj)
-    const txRawFromPartial = TxRaw.fromPartial(txRawObj);
-    console.log('txRawFromPartial', txRawFromPartial)
+    // const txRawObj = {
+    //   bodyBytes: signed.bodyBytes,
+    //   authInfoBytes: signed.authInfoBytes,
+    //   signatures: [fromBase64(signature.signature)],
+    // }
+    // console.log('txRawObj', txRawObj)
+    // const txRawFromPartial = TxRaw.fromPartial(txRawObj);
+    // console.log('txRawFromPartial', txRawFromPartial)
     // return txRawFromPartial
   }
 

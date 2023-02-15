@@ -1,26 +1,18 @@
 import { ripemd160, sha256 } from "@cosmjs/crypto";
-import { fromBase64, toBech32 } from "@cosmjs/encoding";
+import { fromBase64, fromHex, toBase64, toBech32 } from "@cosmjs/encoding";
 import EthCrypto from "eth-crypto";
 import { isSecp256k1Pubkey, rawSecp256k1PubkeyToRawAddress } from "@cosmjs/amino";
 
 function pkpPubKeyToCosmosAddress(publicKey: string) : string{
-    let cleanedPubKey = publicKey;
-    if (publicKey.startsWith('0x')) {
-        cleanedPubKey = publicKey.slice(2);
-    }
-    const compressedPublicKey = EthCrypto.publicKey.compress(cleanedPubKey);
-    const compressedBase64PubKey = hexToBase64(compressedPublicKey);
-    console.log('pkpPubKeyToCosmosAddress - compressedBase64PubKey', compressedBase64PubKey);
-    const encodedCompressedPublicKey = Uint8Array.from(atob(compressedBase64PubKey), (c) => c.charCodeAt(0));
-    const address = ripemd160(sha256(encodedCompressedPublicKey));
-    return toBech32('cosmos', address);
+    const compressedPublicKey = compressPublicKey(publicKey)
+    const uint8ArrayFromHex = fromHex(compressedPublicKey)
+    // const compressedBase64PubKey = hexToBase64(compressedPublicKey);
+    const compressedBase64PubKey = toBase64(uint8ArrayFromHex)
+    return compressedPubKeyToAddress(compressedBase64PubKey);
 }
 
 function compressedPubKeyToAddress(publicKey: string): any {
-    console.log('compressedPubKeyToAddress - publicKey', publicKey);
     const encodedCompressedPublicKey = Uint8Array.from(atob(publicKey), (c) => c.charCodeAt(0));
-    // const encodedCompressedPublicKey = fromString(publicKey, 'base64');
-
     const address = ripemd160(sha256(encodedCompressedPublicKey));
     return toBech32('cosmos', address);
 }
