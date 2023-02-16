@@ -53,6 +53,7 @@ import {
 } from "./helpers/litHelpers";
 import { signCosmosTxWithLit } from "./signWithLit";
 import { ethers } from "ethers";
+import { sha256 } from "@cosmjs/crypto";
 // import Uint8Array from "uint8arrays";
 
 export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [

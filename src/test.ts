@@ -62,7 +62,7 @@ const checkPkpTokenOwnership = async () => {
   // console.log('client', client)
   const pkpTokens = await client.getAllBalances(pkpAddress);
   console.log('pkpTokens', pkpTokens)
-  const keplrTokens = await client.getAllBalances(pkpAddress);
+  const keplrTokens = await client.getAllBalances(keplrAddress);
   console.log('keplrTokens', keplrTokens)
 }
 
@@ -70,6 +70,7 @@ checkPkpTokenOwnership().then(res => {
   console.log('checkPkpTokenOwnership res:', res);
 })
 
+// check making a PKP Cosmos address from a PKP hex public key
 const makePkpCosmosAddressFromPubKey = (publicKey: any) => {
   let cleanedPubKey = publicKey;
   if (publicKey.startsWith('0x')) {
@@ -84,7 +85,8 @@ const makePkpCosmosAddressFromPubKey = (publicKey: any) => {
   return toBech32('cosmos', address);
 }
 
-console.log('PKP Cosmos Address:', makePkpCosmosAddressFromPubKey(pkpPublicKey));
+// console.log('PKP Cosmos Address:', makePkpCosmosAddressFromPubKey(pkpPublicKey));
+
 
 // note: bring back once logging is good
 async function testSignWithLit() {
@@ -97,9 +99,9 @@ async function testSignWithLit() {
 
 }
 
-// testSignWithLit().then((res => {
-//   console.log('SignCosmosWithLit res:', res);
-// }))
+testSignWithLit().then((res => {
+  console.log('SignCosmosWithLit res:', res);
+}))
 
 // note: for exploring stargate code
 const runSigning = async() => {
@@ -112,8 +114,8 @@ const runSigning = async() => {
   }
 
   const signer = await getSignerFromMnemonic()
-  const alice = (await signer.getAccounts())
-  console.log("Alice's address from signer", alice)
+  const accountInfo = (await signer.getAccounts())
+  console.log("accountInfo", accountInfo)
   const signingClient = await SigningStargateClient.connectWithSigner(rpc, signer)
   console.log(
     "With signing client, chain id:",
@@ -133,7 +135,6 @@ const runSigning = async() => {
     }
   )
 
-  // console.log('sendRes', sendRes)
   return 'done'
 }
 

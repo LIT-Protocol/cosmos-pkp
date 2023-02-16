@@ -197,7 +197,6 @@ export class SigningStargateClient extends StargateClient {
       },
     };
     return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
-    // await this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
   }
 
   public async signAndBroadcast(
@@ -218,7 +217,7 @@ export class SigningStargateClient extends StargateClient {
     }
     const txRaw = await this.sign(signerAddress, messages, usedFee, memo);
     const txBytes = TxRaw.encode(txRaw).finish();
-    // return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
+    return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
   }
 
   /**
@@ -254,7 +253,6 @@ export class SigningStargateClient extends StargateClient {
     }
 
     return this.signDirect(signerAddress, messages, fee, memo, signerData)
-    // await this.signDirect(signerAddress, messages, fee, memo, signerData)
   }
 
   private async signDirect(

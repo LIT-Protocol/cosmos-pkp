@@ -42,9 +42,9 @@ async function signCosmosTxWithLit({pkpPublicKey, message, authSig}: SignCosmosT
   const hashedWithEthers = hashMessageUsingEthers(message);
   console.log('hashedWithEthers', hashedWithEthers);
 
-  // const hashedWithCosm = sha256(message);
+  // const uint8ArrayFromMessage = Uint8Array.from(message);
+  // const hashedWithCosm = sha256(uint8ArrayFromMessage);
   // console.log('hashedWithCosm', hashedWithCosm);
-
 
   const jsParams = {
     publicKey: pkpPublicKey,
