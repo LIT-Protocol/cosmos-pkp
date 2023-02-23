@@ -1,5 +1,5 @@
 import { encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee } from "@cosmjs/amino";
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import { fromBase64, fromHex, toBase64 } from "@cosmjs/encoding";
 import { Int53, Uint53 } from "@cosmjs/math";
 import {
   EncodeObject,
@@ -205,7 +205,7 @@ export class SigningStargateClientWithLit extends StargateClient {
         amount: [...amount],
       },
     };
-
+    console.log('sendMsg', sendMsg)
     return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
     // await this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
   }
@@ -261,6 +261,7 @@ export class SigningStargateClientWithLit extends StargateClient {
         chainId: chainId,
       };
     }
+    console.log('sign: signerData', signerData);
 
     return this.signWithLit(signerAddress, messages, fee, memo, signerData)
     // await this.signWithLit(signerAddress, messages, fee, memo, signerData)
@@ -318,13 +319,14 @@ export class SigningStargateClientWithLit extends StargateClient {
     const signature = await signCosmosTxWithLit(signerObj);
     console.log('signWithLit: signature', signature);
 
-    const base64Sig = hexSigToBase64Sig(signature);
+    const base64Sig = hexSigToBase64Sig(signature.slice(2));
     console.log('signWithLit: base64Sig', base64Sig);
 
     const txRawObj = {
       bodyBytes: signDoc.bodyBytes,
       authInfoBytes: signDoc.authInfoBytes,
       signatures: [fromBase64(base64Sig)],
+      // signatures: [fromHex(signature.slice(2))],
     }
     const txRawFromPartial = TxRaw.fromPartial(txRawObj);
     return txRawFromPartial
