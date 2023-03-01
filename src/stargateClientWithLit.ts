@@ -326,7 +326,6 @@ export class SigningStargateClientWithLit extends StargateClient {
       bodyBytes: signDoc.bodyBytes,
       authInfoBytes: signDoc.authInfoBytes,
       signatures: [fromBase64(base64Sig)],
-      // signatures: [fromHex(signature.slice(2))],
     }
     const txRawFromPartial = TxRaw.fromPartial(txRawObj);
     return txRawFromPartial
