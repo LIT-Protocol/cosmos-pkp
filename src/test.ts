@@ -4,7 +4,7 @@ import { SigningStargateClientWithLit } from "./stargateClientWithLit";
 import { ethers } from "ethers";
 import { Keccak256, ripemd160, Secp256k1, sha256 } from "@cosmjs/crypto";
 import EthCrypto from "eth-crypto";
-import { fromHex, toBase64, toBech32 } from "@cosmjs/encoding";
+import { fromBase64, fromHex, toBase64, toBech32 } from "@cosmjs/encoding";
 import { compressPublicKey, pkpPubKeyToCosmosAddress } from "./helpers/litHelpers";
 
 // note: can probably delete
@@ -56,8 +56,8 @@ const pkpAuthSig = {
 
 const amount = [{ denom: "uatom", amount: "100000" }]
 const gasFee = {
-  amount: [{ denom: "uatom", amount: "500" }],
-  gas: "200000",
+  amount: [{ denom: "uatom", amount: "1000" }],
+  gas: "10000",
 }
 
 const rpc = "rpc.sentry-01.theta-testnet.polypore.xyz:26657"
@@ -71,9 +71,9 @@ const checkPkpTokenOwnership = async () => {
   console.log('keplrTokens', keplrTokens)
 }
 
-// checkPkpTokenOwnership().then(res => {
-//   console.log('checkPkpTokenOwnership res:', res);
-// })
+checkPkpTokenOwnership().then(res => {
+  console.log('checkPkpTokenOwnership res:', res);
+})
 
 function convertCosmosPubKeyToEthAddress(publicKey: any): any {
   const pubKey = Secp256k1.uncompressPubkey(publicKey);
@@ -97,9 +97,12 @@ const makePkpCosmosAddressFromPubKey = (publicKey: any) => {
   const uint8ArrayFromHex = fromHex(compressedPublicKey)
   console.log("uint8ArrayFromHex", uint8ArrayFromHex)
   const base64CompressedKey = toBase64(uint8ArrayFromHex)
-  const uint8CompressedPublicKey = Uint8Array.from(atob(base64CompressedKey), (c) => c.charCodeAt(0));
-  const address = ripemd160(sha256(uint8CompressedPublicKey));
-  return toBech32('cosmos', address);
+  console.log('base64CompressedKey', base64CompressedKey)
+  const uint8PubKey = fromBase64(base64CompressedKey);
+  console.log('uint8PubKey', uint8PubKey)
+  // const uint8CompressedPublicKey = Uint8Array.from(atob(base64CompressedKey), (c) => c.charCodeAt(0));
+  // const address = ripemd160(sha256(uint8CompressedPublicKey));
+  // return toBech32('cosmos', address);
 }
 
 // console.log('PKP Cosmos Address:', makePkpCosmosAddressFromPubKey(pkpPublicKey));
@@ -110,7 +113,7 @@ const makePkpCosmosAddressFromPubKey = (publicKey: any) => {
 async function testSignWithLit() {
   console.log('Sign with Lit');
   const pkpSigner = await SigningStargateClientWithLit.createClient(pkpPublicKey, pkpAuthSig, rpc)
-  console.log('Signed Tx is:', pkpSigner);
+  // console.log('Signed Tx is:', pkpSigner);
   const signedTx = await pkpSigner.sendTokens(keplrAddress, amount, gasFee);
   console.log('signedTx is:', signedTx);
   return signedTx;

@@ -1,7 +1,6 @@
-const stubSignDoc = {
-  "bodyBytes":{
-    "type":"Buffer",
-    "data":[
+export const stubSignDoc = () => {
+  return {
+    "bodyBytes": Buffer.from([
       10,
       143,
       1,
@@ -148,11 +147,8 @@ const stubSignDoc = {
       48,
       48,
       48
-    ]
-  },
-  "authInfoBytes":{
-    "type":"Buffer",
-    "data":[
+    ]),
+    "authInfoBytes":  Buffer.from([
       10,
       78,
       10,
@@ -253,16 +249,12 @@ const stubSignDoc = {
       192,
       154,
       12
-    ]
-  },
-  "chainId":"theta-testnet-001",
-  "accountNumber":{
+    ]),
+    "chainId":"theta-testnet-001",
+    "accountNumber":{
     "low":724162,
-    "high":0,
-    "unsigned":false
+      "high":0,
+      "unsigned":false
   }
-}
-
-export default {
-  stubSignDoc
+  }
 }

@@ -1,5 +1,5 @@
 import { encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee } from "@cosmjs/amino";
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import { fromBase64 } from "@cosmjs/encoding";
 import { Int53, Uint53 } from "@cosmjs/math";
 import {
   EncodeObject,
@@ -11,8 +11,7 @@ import {
   OfflineSigner,
   Registry,
   TxBodyEncodeObject,
-  // @ts-ignore
-} from "../../proto-signing/src/index";
+} from "@cosmjs/proto-signing";
 import { HttpEndpoint, Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { assert, assertDefined } from "@cosmjs/utils";
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
@@ -22,7 +21,6 @@ import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import { Height } from "cosmjs-types/ibc/core/client/v1/client";
-// @ts-ignore
 import Long from "long";
 
 import { AminoConverters, AminoTypes } from "./aminotypes";
@@ -53,10 +51,6 @@ import {
   createVestingAminoConverters,
 } from "./modules";
 import { DeliverTxResponse, StargateClient, StargateClientOptions } from "./stargateclient";
-import LitJsSdk from "lit-js-sdk";
-import { makeLogReadableInTerminal } from "../../helpers/litHelpers";
-import { Secp256k1 } from "@cosmjs/crypto";
-import { publicKey } from "eth-crypto";
 
 export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ["/cosmos.base.v1beta1.Coin", Coin],
@@ -185,9 +179,7 @@ export class SigningStargateClient extends StargateClient {
     amount: readonly Coin[],
     fee: StdFee | "auto" | number,
     memo = "",
-  // ): Promise<DeliverTxResponse> {
-  ): Promise<void> {
-    // creates message for transaction
+  ): Promise<DeliverTxResponse> {
     const sendMsg: MsgSendEncodeObject = {
       typeUrl: "/cosmos.bank.v1beta1.MsgSend",
       value: {
@@ -216,8 +208,10 @@ export class SigningStargateClient extends StargateClient {
       usedFee = fee;
     }
     const txRaw = await this.sign(signerAddress, messages, usedFee, memo);
-    const txBytes = TxRaw.encode(txRaw).finish();
-    return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
+    if (!!txRaw) {
+      const txBytes = TxRaw.encode(txRaw).finish();
+      return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
+    }
   }
 
   /**
@@ -236,9 +230,8 @@ export class SigningStargateClient extends StargateClient {
     fee: StdFee,
     memo: string,
     explicitSignerData?: SignerData,
-  // ): Promise<TxRaw> {
   ): Promise<any> {
-
+  // ): Promise<TxRaw> {
     let signerData: SignerData;
     if (explicitSignerData) {
       signerData = explicitSignerData;
@@ -252,7 +245,7 @@ export class SigningStargateClient extends StargateClient {
       };
     }
 
-    return this.signDirect(signerAddress, messages, fee, memo, signerData)
+      return this.signDirect(signerAddress, messages, fee, memo, signerData)
   }
 
   private async signDirect(
@@ -267,13 +260,10 @@ export class SigningStargateClient extends StargateClient {
     const accountFromSigner = (await this.signer.getAccounts()).find(
       (account) => account.address === signerAddress,
     );
-    console.log('signDirect: accountFromSigner', accountFromSigner)
-
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
-    const encodedPubKey = encodePubkey(encodeSecp256k1Pubkey(accountFromSigner.pubkey));
-    console.log('signDirect: encodedPubKey', encodedPubKey)
+    const pubkey = encodePubkey(encodeSecp256k1Pubkey(accountFromSigner.pubkey));
 
     const txBodyEncodeObject: TxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
@@ -282,37 +272,21 @@ export class SigningStargateClient extends StargateClient {
         memo: memo,
       },
     };
-    console.log('signDirect: txBodyEncodeObject', txBodyEncodeObject)
-
     const txBodyBytes = this.registry.encode(txBodyEncodeObject);
-    console.log('signDirect: txBodyBytes', txBodyBytes);
-
     const gasLimit = Int53.fromString(fee.gas).toNumber();
-    console.log('signDirect: gasLimit', gasLimit);
-
     const authInfoBytes = makeAuthInfoBytes(
-      [{ pubkey: encodedPubKey, sequence }],
+      [{ pubkey, sequence }],
       fee.amount,
       gasLimit,
       fee.granter,
       fee.payer,
     );
-    console.log('signDirect: authInfoBytes', authInfoBytes);
-
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
-    console.log('signDirect: signDoc', signDoc);
-
-    const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
-    console.log('signDirect: signature', signature);
-    console.log('signDirect: signed', signed);
-
-    const txRawObj = {
-      bodyBytes: signed.bodyBytes,
-      authInfoBytes: signed.authInfoBytes,
-      signatures: [fromBase64(signature.signature)],
-    }
-    const txRawFromPartial = TxRaw.fromPartial(txRawObj);
-    return txRawFromPartial
+    // const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
+    // return TxRaw.fromPartial({
+    //   bodyBytes: signed.bodyBytes,
+    //   authInfoBytes: signed.authInfoBytes,
+    //   signatures: [fromBase64(signature.signature)],
+    // });
   }
-
 }

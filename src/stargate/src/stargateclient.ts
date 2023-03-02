@@ -444,7 +444,9 @@ export class StargateClient {
         : pollForTx(txId);
     };
 
+    console.log('broadcasting tx', tx)
     const broadcasted = await this.forceGetTmClient().broadcastTxSync({ tx });
+    console.log('broadcasted', broadcasted);
     if (broadcasted.code) {
       return Promise.reject(
         new BroadcastTxError(broadcasted.code, broadcasted.codespace ?? "", broadcasted.log),

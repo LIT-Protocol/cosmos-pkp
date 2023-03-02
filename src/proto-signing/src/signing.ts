@@ -55,7 +55,7 @@ export function makeAuthInfoBytes(
       payer: feePayer,
     },
   });
-  console.log('proto-signing: makeAuthInfoBytes: authInfo: ', JSON.stringify(authInfo, undefined, 2));
+  // console.log('proto-signing: makeAuthInfoBytes: authInfo: ', JSON.stringify(authInfo, undefined, 2));
   // console.log('proto-signing: makeAuthInfoBytes: authInfo.signerInfos[0].publicKey: ', authInfo.signerInfos[0].publicKey);
   // console.log('proto-signing: makeAuthInfoBytes: authInfo.signerInfos[0].modeInfo: ', authInfo.signerInfos[0].modeInfo);
   // console.log('proto-signing: makeAuthInfoBytes: authInfo.signerInfos[0].sequence: ', authInfo.signerInfos[0].sequence);

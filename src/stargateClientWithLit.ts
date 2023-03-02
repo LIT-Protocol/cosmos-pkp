@@ -54,7 +54,9 @@ import {
 import { signCosmosTxWithLit } from "./signWithLit";
 import { ethers } from "ethers";
 import { sha256 } from "@cosmjs/crypto";
-// import Uint8Array from "uint8arrays";
+import { stubSignDoc } from "./stub/stubSignDoc";
+import { stubAuthInfoBytes, stubTxBodyBytes } from "./stub/stubSignDocVars";
+import { assertDefined } from "@cosmjs/utils";
 
 export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ["/cosmos.base.v1beta1.Coin", Coin],
@@ -179,12 +181,16 @@ export class SigningStargateClientWithLit extends StargateClient {
   //   memo: string | undefined,
   // ): Promise<number> {
   //   const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
-  //   const base64PubKey = hexToBase64(this.compressedPublicKey);
-  //   const uint8ArrayPubKey = base64ToUint8Array(base64PubKey);
-  //   const pubkey = encodeSecp256k1Pubkey(uint8ArrayPubKey);
+  //   const accountFromSigner = (await this.signer.getAccounts()).find(
+  //     (account) => account.address === signerAddress,
+  //   );
+  //   if (!accountFromSigner) {
+  //     throw new Error("Failed to retrieve account from signer");
+  //   }
+  //   const pubkey = encodeSecp256k1Pubkey(accountFromSigner.pubkey);
   //   const { sequence } = await this.getSequence(signerAddress);
   //   const { gasInfo } = await this.forceGetQueryClient().tx.simulate(anyMsgs, memo, pubkey, sequence);
-  //   // @ts-ignore
+  //   assertDefined(gasInfo);
   //   return Uint53.fromString(gasInfo.gasUsed.toString()).toNumber();
   // }
 
@@ -226,9 +232,11 @@ export class SigningStargateClientWithLit extends StargateClient {
       usedFee = fee;
     // }
     const txRaw = await this.sign(signerAddress, messages, usedFee, memo);
-    const txBytes = TxRaw.encode(txRaw).finish();
-    // return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
-    return this.broadcastTx(txBytes);
+    if (!!txRaw) {
+      const txBytes = TxRaw.encode(txRaw).finish();
+      // return this.broadcastTx(txBytes);
+      return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
+    }
   }
 
   /**
@@ -254,6 +262,8 @@ export class SigningStargateClientWithLit extends StargateClient {
       signerData = explicitSignerData;
     } else {
       const { accountNumber, sequence } = await this.getSequence(signerAddress);
+      console.log('sign: accountNumber', accountNumber)
+      console.log('sign: sequence', sequence)
       const chainId = await this.getChainId();
       signerData = {
         accountNumber: accountNumber,
@@ -263,7 +273,7 @@ export class SigningStargateClientWithLit extends StargateClient {
     }
     console.log('sign: signerData', signerData);
 
-    return this.signWithLit(signerAddress, messages, fee, memo, signerData)
+    // return this.signWithLit(signerAddress, messages, fee, memo, signerData)
     // await this.signWithLit(signerAddress, messages, fee, memo, signerData)
   }
 
@@ -275,9 +285,9 @@ export class SigningStargateClientWithLit extends StargateClient {
     { accountNumber, sequence, chainId }: SignerData,
   // ): Promise<TxRaw> {
   ): Promise<any> {
+    console.log('signWithLit: fee', fee);
 
-    const uint8PubKey: any = new Uint8Array(Buffer.from(this.compressedPublicKey, 'hex'));
-    console.log('signWithLit: uint8PubKey', uint8PubKey);
+    const uint8PubKey = fromHex(this.compressedPublicKey);
 
     const txBodyEncodeObject: TxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
@@ -306,7 +316,10 @@ export class SigningStargateClientWithLit extends StargateClient {
     );
     console.log('signWithLit: authInfoBytes', authInfoBytes);
 
-    const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
+    const signDocOriginal = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
+    console.log('signWithLit: signDoc', signDocOriginal);
+
+    const signDoc = makeSignDoc(stubTxBodyBytes(), stubAuthInfoBytes(), 'theta-testnet-001', 724162);
     console.log('signWithLit: signDoc', signDoc);
 
     const signerObj = {
@@ -321,11 +334,13 @@ export class SigningStargateClientWithLit extends StargateClient {
 
     const base64Sig = hexSigToBase64Sig(signature.slice(2));
     console.log('signWithLit: base64Sig', base64Sig);
+    const fromBase64Sig = fromBase64(base64Sig)
+    console.log('signWithLit: fromBase64Sig', fromBase64Sig)
 
     const txRawObj = {
       bodyBytes: signDoc.bodyBytes,
       authInfoBytes: signDoc.authInfoBytes,
-      signatures: [fromBase64(base64Sig)],
+      signatures: [fromBase64Sig],
     }
     const txRawFromPartial = TxRaw.fromPartial(txRawObj);
     return txRawFromPartial
