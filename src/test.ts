@@ -100,12 +100,13 @@ const makePkpCosmosAddressFromPubKey = (publicKey: any) => {
   console.log('base64CompressedKey', base64CompressedKey)
   const uint8PubKey = fromBase64(base64CompressedKey);
   console.log('uint8PubKey', uint8PubKey)
-  // const uint8CompressedPublicKey = Uint8Array.from(atob(base64CompressedKey), (c) => c.charCodeAt(0));
+  const uint8CompressedPublicKey = Uint8Array.from(atob(base64CompressedKey), (c) => c.charCodeAt(0));
+  console.log('uint8CompressedPublicKey', uint8CompressedPublicKey)
   // const address = ripemd160(sha256(uint8CompressedPublicKey));
   // return toBech32('cosmos', address);
 }
 
-// console.log('PKP Cosmos Address:', makePkpCosmosAddressFromPubKey(pkpPublicKey));
+console.log('PKP Cosmos Address:', makePkpCosmosAddressFromPubKey(pkpPublicKey));
 // console.log('pkpPubKeyToCosmosAddress:', pkpPubKeyToCosmosAddress(pkpPublicKey));
 
 
