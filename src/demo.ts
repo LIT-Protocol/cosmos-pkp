@@ -104,7 +104,7 @@ async function runSigningWithLitClient() {
     [{ denom: "uatom", amount: "100000" }],
     {
       amount: [{ denom: "uatom", amount: "10000" }],
-      gas: "100000",
+      gas: "50000",
     });
   console.log('signedTx is:', signedTx);
   return signedTx;
