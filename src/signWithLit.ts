@@ -1,4 +1,4 @@
-import LitJsSdk from 'lit-js-sdk'
+import LitJsSdk from "lit-js-sdk";
 import { ethers } from "ethers";
 import { sha256 } from "@ethersproject/sha2";
 import { Secp256k1 } from "@cosmjs/crypto";
@@ -16,7 +16,7 @@ const code = `
     const sigShare = await LitActions.signEcdsa({ toSign, publicKey, sigName });
   };
   sign()
-`
+`;
 
 // const code = `
 //   const sign = async () => {
@@ -27,35 +27,40 @@ const code = `
 
 const hashMessageUsingEthers = (message: any) => {
   return sha256(ethers.utils.toUtf8Bytes(message));
-}
+};
 
-async function signCosmosTxWithLit({pkpPublicKey, message, authSig}: SignCosmosTxWithLitParams):
-  Promise<any> {
+async function signCosmosTxWithLit({
+  pkpPublicKey,
+  message,
+  authSig,
+}: SignCosmosTxWithLitParams): Promise<any> {
   let litNodeClient;
   try {
     // @ts-ignore
-    litNodeClient = new LitJsSdk.LitNodeClient({litNetwork: "serrano", debug: false});
+    litNodeClient = new LitJsSdk.LitNodeClient({
+      litNetwork: "serrano",
+      debug: false,
+    });
     await litNodeClient.connect();
   } catch (err) {
-    console.log('Unable to connect to network', err);
+    console.log("Unable to connect to network", err);
     return;
   }
 
   if (!litNodeClient) {
-    console.log('LitNodeClient was not instantiated');
+    console.log("LitNodeClient was not instantiated");
     return;
   }
 
   const hashedWithCosm = sha256(ethers.utils.toUtf8Bytes(message));
-  const buffer = Buffer.from(hashedWithCosm.slice(2), 'hex');
+  const buffer = Buffer.from(hashedWithCosm.slice(2), "hex");
   const hashedArray = new Uint8Array(buffer);
 
   const jsParams = {
     publicKey: pkpPublicKey,
     toSign: hashedArray,
-    sigName: 'cosmos',
-  }
-
+    sigName: "cosmos",
+  };
 
   let litActionRes;
   try {
@@ -65,15 +70,24 @@ async function signCosmosTxWithLit({pkpPublicKey, message, authSig}: SignCosmosT
       jsParams: jsParams,
     });
   } catch (err) {
-    console.log('Unable to execute code', err);
+    console.log("Unable to execute code", err);
     return;
   }
 
-  console.log('litActionRes', ethers.utils.recoverPublicKey(hashedWithCosm, litActionRes.signatures.cosmos.signature));
+  console.log("things", {
+    pkpPublicKey,
+    hashedWithCosm,
+    sig: litActionRes.signatures.cosmos.signature,
+  });
+  console.log(
+    "litActionRes",
+    ethers.utils.recoverPublicKey(
+      hashedWithCosm,
+      litActionRes.signatures.cosmos.signature
+    )
+  );
 
-  return litActionRes.signatures.cosmos.signature
+  return litActionRes.signatures.cosmos.signature;
 }
 
-export {
-  signCosmosTxWithLit,
-}
+export { signCosmosTxWithLit };
