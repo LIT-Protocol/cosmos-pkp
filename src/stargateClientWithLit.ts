@@ -171,6 +171,7 @@ export class SigningStargateClientWithLit extends StargateClient {
         amount: [...amount],
       },
     };
+    console.log("sendMsg: ", sendMsg)
     return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
   }
 

@@ -37,8 +37,8 @@ const pkpOwnerAddress = '0x20623933681a53D5ee48959eC1770BeA7afA4eDe'
 
 const pkpPublicKey = "0x0460579cb0d4bb4846ba43a001e7ec6c42e4db62f3b9c40358df31392e90b24952217c60c945c434dfb68bfc1e5b7cd89b41d1180bdd12b76a9f1d2f82b6d0d6db"
 const pkpCompressedPublicKey = "0x0360579cb0d4bb4846ba43a001e7ec6c42e4db62f3b9c40358df31392e90b24952"
-// const pkpCosmosAddress = 'cosmos1y6nj302f63xanqvmkyx8acc2cq2xsqlwmzfzup'
-const pkpCosmosAddress = 'cosmos12ptkcxku9ry5htp6wq0jw8xyln4z3ny7emgwmf'
+const pkpCosmosAddress = 'cosmos1y6nj302f63xanqvmkyx8acc2cq2xsqlwmzfzup'
+// const pkpCosmosAddress = 'cosmos12ptkcxku9ry5htp6wq0jw8xyln4z3ny7emgwmf'
 const pkpEthAddress = "0x7Fd02EEDaE344ecdC95b53086d537bD259c713fb"
 // const pkpCosmosPubKey = [
 //   3,  96,  87, 156, 176, 212, 187,  72,
@@ -121,9 +121,9 @@ async function testSignWithLit() {
   return signedTx;
 }
 
-// testSignWithLit().then((res => {
-//   console.log('SignCosmosWithLit res:', res);
-// }))
+testSignWithLit().then((res => {
+  console.log('SignCosmosWithLit res:', res);
+}))
 
 // note: for exploring stargate code
 const runSigning = async() => {

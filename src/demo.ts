@@ -38,24 +38,24 @@ const pkpCompressedPublicKey = "0x0360579cb0d4bb4846ba43a001e7ec6c42e4db62f3b9c4
 const pkpEthAddress = "0x7Fd02EEDaE344ecdC95b53086d537bD259c713fb"
 
 // this pkpCosmosAddress uses the reverse engineered series of functions to derive the address (attempt #1 in litHelpers.ts)
-// const pkpCosmosAddress = 'cosmos1y6nj302f63xanqvmkyx8acc2cq2xsqlwmzfzup'
+const pkpCosmosAddress = 'cosmos1y6nj302f63xanqvmkyx8acc2cq2xsqlwmzfzup'
 
 // this pkpCosmosAddress uses the tendermint derivation (attempt#2 in litHelpers.ts)
-const pkpCosmosAddress = 'cosmos12ptkcxku9ry5htp6wq0jw8xyln4z3ny7emgwmf'
+// const pkpCosmosAddress = 'cosmos12ptkcxku9ry5htp6wq0jw8xyln4z3ny7emgwmf'
 
 // comment in to check token ownership of pkp and keplr accounts
 // checkPkpTokenOwnership(pkpCosmosAddress).then(res => {
 //   console.log('checkPkpTokenOwnership res:', res);
 // })
 
-checkCosmosPublicKeyToEthAddress().then(res => {
-  console.log('checkCosmosPublicKeyToEthAddress res:', res);
-})
+// checkCosmosPublicKeyToEthAddress().then(res => {
+//   console.log('checkCosmosPublicKeyToEthAddress res:', res);
+// })
 
 // comment in to run signing with Lit
-// runSigningWithLitClient().then((res => {
-//   console.log('SignCosmosWithLit res:', res);
-// }))
+runSigningWithLitClient().then((res => {
+  console.log('SignCosmosWithLit res:', res);
+}))
 
 // comment in to run a standard cosmos transaction with the keplr wallet
 // runSigningWithOriginalStargateClient().then(res => {
