@@ -49,6 +49,7 @@ function compressPublicKey(publicKey: string): string {
     }
     return EthCrypto.publicKey.compress(cleanedPubKey);
 }
+// end attempt #1
 
 // original cosmosPublicKey to EthAddress from the github issue
 // https://github.com/cosmos/cosmjs/issues/1044
