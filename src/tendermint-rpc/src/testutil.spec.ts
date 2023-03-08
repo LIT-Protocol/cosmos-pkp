@@ -72,7 +72,8 @@ export function tendermintEnabled(): boolean {
 
 export function pendingWithoutTendermint(): void {
   if (!tendermintEnabled()) {
-    pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
+    // pending("Set TENDERMINT_ENABLED to enable tendermint-based tests");
+    console.log('Set TENDERMINT_ENABLED to enable tendermint-based tests')
   }
 }
 

@@ -2,7 +2,9 @@
 import { addCoins } from "@cosmjs/amino";
 import { toHex } from "@cosmjs/encoding";
 import { Uint53 } from "@cosmjs/math";
-import { HttpEndpoint, Tendermint34Client, toRfc3339WithNanoseconds } from "@cosmjs/tendermint-rpc";
+// import { HttpEndpoint, Tendermint34Client, toRfc3339WithNanoseconds } from "@cosmjs/tendermint-rpc";
+// @ts-ignore
+import { HttpEndpoint, Tendermint34Client, toRfc3339WithNanoseconds} from "../../tendermint-rpc/src/index";
 import { assert, sleep } from "@cosmjs/utils";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
@@ -194,7 +196,7 @@ export class StargateClient {
     return new StargateClient(tmClient, options);
   }
 
-  protected constructor(tmClient: Tendermint34Client | undefined, options: StargateClientOptions) {
+  protected constructor(tmClient: Tendermint34Client | undefined | any, options: StargateClientOptions) {
     if (tmClient) {
       this.tmClient = tmClient;
       this.queryClient = QueryClient.withExtensions(

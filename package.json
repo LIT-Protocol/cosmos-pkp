@@ -14,10 +14,13 @@
     "@cosmjs/encoding": "^0.29.5",
     "@cosmjs/stargate": "^0.29.5",
     "@cosmos-client/core": "^0.46.1",
+    "bech32": "^2.0.0",
+    "bitcoinjs-lib": "^6.1.0",
     "eth-crypto": "^2.5.0",
     "ethers": "^5.7.2",
     "lit-js-sdk": "^1.2.59",
     "long": "4.0.0",
-    "multiformats": "11.0.0"
+    "multiformats": "11.0.0",
+    "sha256": "^0.2.0"
   }
 }

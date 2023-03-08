@@ -282,11 +282,11 @@ export class SigningStargateClient extends StargateClient {
       fee.payer,
     );
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
-    // const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
-    // return TxRaw.fromPartial({
-    //   bodyBytes: signed.bodyBytes,
-    //   authInfoBytes: signed.authInfoBytes,
-    //   signatures: [fromBase64(signature.signature)],
-    // });
+    const { signature, signed } = await this.signer.signDirect(signerAddress, signDoc);
+    return TxRaw.fromPartial({
+      bodyBytes: signed.bodyBytes,
+      authInfoBytes: signed.authInfoBytes,
+      signatures: [fromBase64(signature.signature)],
+    });
   }
 }

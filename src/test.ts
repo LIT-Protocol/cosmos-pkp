@@ -37,20 +37,21 @@ const pkpOwnerAddress = '0x20623933681a53D5ee48959eC1770BeA7afA4eDe'
 
 const pkpPublicKey = "0x0460579cb0d4bb4846ba43a001e7ec6c42e4db62f3b9c40358df31392e90b24952217c60c945c434dfb68bfc1e5b7cd89b41d1180bdd12b76a9f1d2f82b6d0d6db"
 const pkpCompressedPublicKey = "0x0360579cb0d4bb4846ba43a001e7ec6c42e4db62f3b9c40358df31392e90b24952"
-const pkpCosmosAddress = 'cosmos1y6nj302f63xanqvmkyx8acc2cq2xsqlwmzfzup'
+// const pkpCosmosAddress = 'cosmos1y6nj302f63xanqvmkyx8acc2cq2xsqlwmzfzup'
+const pkpCosmosAddress = 'cosmos12ptkcxku9ry5htp6wq0jw8xyln4z3ny7emgwmf'
 const pkpEthAddress = "0x7Fd02EEDaE344ecdC95b53086d537bD259c713fb"
-const pkpCosmosPubKey = [
-  3,  96,  87, 156, 176, 212, 187,  72,
-  70, 186,  67, 160,   1, 231, 236, 108,
-  66, 228, 219,  98, 243, 185, 196,   3,
-  88, 223,  49,  57,  46, 144, 178,  73,
-  82
-]
+// const pkpCosmosPubKey = [
+//   3,  96,  87, 156, 176, 212, 187,  72,
+//   70, 186,  67, 160,   1, 231, 236, 108,
+//   66, 228, 219,  98, 243, 185, 196,   3,
+//   88, 223,  49,  57,  46, 144, 178,  73,
+//   82
+// ]
 
 const pkpAuthSig = {
-  "sig": "0xe9e8fe0fe1739180a8910fcee73f2780783c973a67bb0c4f569d5c4949aa12ce3cfde196f0cc81f66ae57c6e892e125cf534cc925724e01996e506b87d9512481b",
+  "sig": "0x4348d34c6b6e461b84ffbaf0b093bce8110eab3ee644ef4a73afda71ad77c0371d349cd2837e36ee7b4847c2ec0b5f7ad94781a34bf13533690c03f4f296e0d71c",
   "derivedVia": "web3.eth.personal.sign",
-  "signedMessage": "lit-swap-playground.netlify.app wants you to sign in with your Ethereum account:\n0x20623933681a53D5ee48959eC1770BeA7afA4eDe\n\n\nURI: https://lit-swap-playground.netlify.app/\nVersion: 1\nChain ID: 1\nNonce: egDrrZd8MmldMdI7M\nIssued At: 2023-02-23T18:59:50.116Z\nExpiration Time: 2023-03-02T18:59:50.097Z",
+  "signedMessage": "lit-swap-playground.netlify.app wants you to sign in with your Ethereum account:\n0x20623933681a53D5ee48959eC1770BeA7afA4eDe\n\n\nURI: https://lit-swap-playground.netlify.app/\nVersion: 1\nChain ID: 137\nNonce: jPKR8TYXLgYKFNE4d\nIssued At: 2023-03-08T17:15:06.230Z\nExpiration Time: 2023-03-15T17:15:06.207Z",
   "address": "0x20623933681a53D5ee48959eC1770BeA7afA4eDe"
 }
 
@@ -71,9 +72,9 @@ const checkPkpTokenOwnership = async () => {
   console.log('keplrTokens', keplrTokens)
 }
 
-checkPkpTokenOwnership().then(res => {
-  console.log('checkPkpTokenOwnership res:', res);
-})
+// checkPkpTokenOwnership().then(res => {
+//   console.log('checkPkpTokenOwnership res:', res);
+// })
 
 function convertCosmosPubKeyToEthAddress(publicKey: any): any {
   const pubKey = Secp256k1.uncompressPubkey(publicKey);
@@ -120,9 +121,9 @@ async function testSignWithLit() {
   return signedTx;
 }
 
-testSignWithLit().then((res => {
-  console.log('SignCosmosWithLit res:', res);
-}))
+// testSignWithLit().then((res => {
+//   console.log('SignCosmosWithLit res:', res);
+// }))
 
 // note: for exploring stargate code
 const runSigning = async() => {
@@ -149,10 +150,10 @@ const runSigning = async() => {
   await signingClient.sendTokens(
     keplrAddress,
     pkpCosmosAddress,
-    [{ denom: "uatom", amount: "100000" }],
+    [{ denom: "uatom", amount: "200000" }],
     {
-      amount: [{ denom: "uatom", amount: "500" }],
-      gas: "200000",
+      amount: [{ denom: "uatom", amount: "10000" }],
+      gas: "100000",
     }
   )
 

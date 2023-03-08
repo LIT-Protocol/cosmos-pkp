@@ -85,11 +85,6 @@ export interface SignerData {
   readonly chainId: string;
 }
 
-/** Use for testing only */
-export interface PrivateSigningStargateClient {
-  readonly registry: Registry;
-}
-
 export interface SigningStargateClientOptions extends StargateClientOptions {
   readonly registry?: Registry;
   readonly aminoTypes?: AminoTypes;
@@ -140,22 +135,6 @@ export class SigningStargateClientWithLit extends StargateClient {
     return new SigningStargateClientWithLit(pkpPublicKey, authSig, tmClient, options);
   }
 
-  /**
-   * Creates a client in offline mode.
-   *
-   * This should only be used in niche cases where you know exactly what you're doing,
-   * e.g. when building an offline signing application.
-   *
-   * When you try to use online functionality with such a signer, an
-   * exception will be raised.
-   */
-  // public static async offline(
-  //   signer: OfflineSigner,
-  //   options: SigningStargateClientOptions = {},
-  // ): Promise<SigningStargateClientWithLit> {
-  //   return new SigningStargateClientWithLit(undefined, signer, options);
-  // }
-
   protected constructor(
       pkpPublicKey: string,
       authSig: AuthSig,
@@ -175,25 +154,6 @@ export class SigningStargateClientWithLit extends StargateClient {
     this.gasPrice = options.gasPrice;
   }
 
-  // public async simulate(
-  //   signerAddress: string,
-  //   messages: readonly EncodeObject[],
-  //   memo: string | undefined,
-  // ): Promise<number> {
-  //   const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
-  //   const accountFromSigner = (await this.signer.getAccounts()).find(
-  //     (account) => account.address === signerAddress,
-  //   );
-  //   if (!accountFromSigner) {
-  //     throw new Error("Failed to retrieve account from signer");
-  //   }
-  //   const pubkey = encodeSecp256k1Pubkey(accountFromSigner.pubkey);
-  //   const { sequence } = await this.getSequence(signerAddress);
-  //   const { gasInfo } = await this.forceGetQueryClient().tx.simulate(anyMsgs, memo, pubkey, sequence);
-  //   assertDefined(gasInfo);
-  //   return Uint53.fromString(gasInfo.gasUsed.toString()).toNumber();
-  // }
-
   public async sendTokens(
     recipientAddress: string,
     amount: readonly Coin[],
@@ -211,9 +171,7 @@ export class SigningStargateClientWithLit extends StargateClient {
         amount: [...amount],
       },
     };
-    console.log('sendMsg', sendMsg)
     return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
-    // await this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
   }
 
   public async signAndBroadcast(
@@ -224,18 +182,11 @@ export class SigningStargateClientWithLit extends StargateClient {
     // ): Promise<DeliverTxResponse> {
   ): Promise<any> {
     let usedFee: StdFee = fee
-    // if (fee == "auto" || typeof fee === "number") {
-    //   const gasEstimation = await this.simulate(signerAddress, messages, memo);
-    //   const multiplier = typeof fee === "number" ? fee : 1.3;
-    //   usedFee = calculateFee(Math.round(gasEstimation * multiplier), this.gasPrice);
-    // } else {
-      usedFee = fee;
-    // }
     const txRaw = await this.sign(signerAddress, messages, usedFee, memo);
     if (!!txRaw) {
       const txBytes = TxRaw.encode(txRaw).finish();
-      // return this.broadcastTx(txBytes);
-      return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
+      return this.broadcastTx(txBytes);
+      // return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
     }
   }
 
@@ -273,7 +224,7 @@ export class SigningStargateClientWithLit extends StargateClient {
     }
     console.log('sign: signerData', signerData);
 
-    // return this.signWithLit(signerAddress, messages, fee, memo, signerData)
+    return this.signWithLit(signerAddress, messages, fee, memo, signerData)
     // await this.signWithLit(signerAddress, messages, fee, memo, signerData)
   }
 
@@ -333,9 +284,7 @@ export class SigningStargateClientWithLit extends StargateClient {
     console.log('signWithLit: signature', signature);
 
     const base64Sig = hexSigToBase64Sig(signature.slice(2));
-    console.log('signWithLit: base64Sig', base64Sig);
     const fromBase64Sig = fromBase64(base64Sig)
-    console.log('signWithLit: fromBase64Sig', fromBase64Sig)
 
     const txRawObj = {
       bodyBytes: signDoc.bodyBytes,
