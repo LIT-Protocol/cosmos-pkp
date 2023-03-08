@@ -69,6 +69,11 @@ async function signCosmosTxWithLit({pkpPublicKey, message, authSig}: SignCosmosT
     return;
   }
 
+  console.log("things", {
+    pkpPublicKey,
+    hashedWithCosm,
+    sig: litActionRes.signatures.cosmos.signature,
+  });
   console.log('litActionRes', ethers.utils.recoverPublicKey(hashedWithCosm, litActionRes.signatures.cosmos.signature));
 
   return litActionRes.signatures.cosmos.signature

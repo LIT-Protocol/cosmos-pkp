@@ -284,15 +284,15 @@ export class SigningStargateClientWithLit extends StargateClient {
     const signature = await signCosmosTxWithLit(signerObj);
     console.log('signWithLit: signature', signature);
 
-    const base64Sig = hexSigToBase64Sig(signature.slice(2));
-    const fromBase64Sig = fromBase64(base64Sig)
-
-    const txRawObj = {
-      bodyBytes: signDoc.bodyBytes,
-      authInfoBytes: signDoc.authInfoBytes,
-      signatures: [fromBase64Sig],
-    }
-    const txRawFromPartial = TxRaw.fromPartial(txRawObj);
-    return txRawFromPartial
+    // const base64Sig = hexSigToBase64Sig(signature.slice(2));
+    // const fromBase64Sig = fromBase64(base64Sig)
+    //
+    // const txRawObj = {
+    //   bodyBytes: signDoc.bodyBytes,
+    //   authInfoBytes: signDoc.authInfoBytes,
+    //   signatures: [fromBase64Sig],
+    // }
+    // const txRawFromPartial = TxRaw.fromPartial(txRawObj);
+    // return txRawFromPartial
   }
 }

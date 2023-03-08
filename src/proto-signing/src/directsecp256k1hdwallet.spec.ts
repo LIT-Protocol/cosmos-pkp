@@ -84,7 +84,7 @@ describe("DirectSecp256k1HdWallet", () => {
         "economy stock theory fatal elder harbor betray wasp final emotion task crumble siren bottom lizard educate guess current outdoor pair theory focus wife stone";
       const prefix = "wasm";
       const accountNumbers = [0, 1, 2, 3, 4];
-      const hdPaths = accountNumbers.map(makeCosmoshubPath);
+      const hdPaths:any = accountNumbers.map(makeCosmoshubPath);
       const original = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
         hdPaths: hdPaths,
         prefix: prefix,

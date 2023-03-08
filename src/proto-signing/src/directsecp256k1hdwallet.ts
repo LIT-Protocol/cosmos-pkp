@@ -215,7 +215,7 @@ export class DirectSecp256k1HdWallet implements OfflineDirectSigner {
         if (!accounts.every(({ prefix }) => prefix === firstPrefix)) {
           throw new Error("Accounts do not all have the same prefix");
         }
-        const hdPaths = accounts.map(({ hdPath }) => stringToPath(hdPath));
+        const hdPaths:any = accounts.map(({ hdPath }) => stringToPath(hdPath));
         return DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
           hdPaths: hdPaths,
           prefix: firstPrefix,
